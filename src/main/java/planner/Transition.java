@@ -80,8 +80,6 @@ public class Transition {
                 .append(" STOPS at ")
                 .append(elevator.getPosition())
                 .append(" floor\n");
-        System.out.println(trace);
-
     }
 
     public void addMove() {
@@ -90,8 +88,6 @@ public class Transition {
                 .append(" MOVED to ")
                 .append(elevator.getPosition())
                 .append(" floor\n");
-        System.out.println(trace);
-
     }
 
     public void addEnter(Person person) {
@@ -103,8 +99,6 @@ public class Transition {
                 .append(" at ")
                 .append(elevator.getPosition())
                 .append(" floor\n");
-        System.out.println(trace);
-
     }
 
     public void addExit(Person person) {
@@ -116,7 +110,6 @@ public class Transition {
                 .append(" at ")
                 .append(elevator.getPosition())
                 .append(" floor\n");
-        System.out.println(trace);
     }
 
     public void addEmpty(Floor floor) {
@@ -127,6 +120,5 @@ public class Transition {
                 .append(" floor with ")
                 .append(floor.getPeople().size())
                 .append(" floor\n");
-        System.out.println(trace);
     }
 }

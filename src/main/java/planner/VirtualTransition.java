@@ -7,16 +7,28 @@ import java.util.List;
 
 /**
  * Created by Smirnov-VN on 18.04.2017.
- *
+ * Виртуальный переход для расчета эвристики
  */
 public class VirtualTransition implements Comparable<VirtualTransition> {
 
+    /**
+     * Тип перехода
+     */
     private TransitionType type;
 
+    /**
+     * Точка назначения перехода
+     */
     private Floor floor;
 
+    /**
+     * Люди, которые будут перевезены в этом переходе
+     */
     private List<Person> people;
 
+    /**
+     * Значение эвристики
+     */
     private double heuristic;
 
     VirtualTransition(TransitionType type, Floor floor) {

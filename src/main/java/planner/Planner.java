@@ -57,13 +57,13 @@ public class Planner {
         }
         List<Person> copy = copyToGoUp(elevator);
         if (!copy.isEmpty()) {
-            VirtualTransition transition = new VirtualTransition(TransitionType.FULL, copy);
+            VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, copy);
             transition.setHeuristic((double) copy.size() / Transition.MOVE_COST / floors.length);
             transitions.add(transition);
         }
         copy = copyToGoDown(elevator);
         if (!copy.isEmpty()) {
-            VirtualTransition transition = new VirtualTransition(TransitionType.FULL, copy);
+            VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, copy);
             transition.setHeuristic((double) copy.size() / Transition.MOVE_COST / floors.length);
             transitions.add(transition);
         }

@@ -17,8 +17,8 @@ public class Main {
     private static Elevator[] elevators;
 
     public static void main(String[] args) {
-        startLevel(Main::initLevel1);
-        startLevel(Main::initLevel2);
+        startLevel(Main::initLevel1, true);
+        startLevel(Main::initLevel2, false);
     }
 
     private static void initLevel1() {
@@ -30,15 +30,9 @@ public class Main {
         Transition.ENTER_COST = 0;
         Transition.EXIT_COST = 0;
         Transition.EMPTY_COST = 0.05;
-
-
-        floors = new Floor[FLOORS];
-        floors[0] = new Floor(1, null);
-        for(int i=1; i<FLOORS; i++) {
-            floors[i] = new Floor(i+1, floors[i-1]);
-            floors[i-1].setUp(floors[i]);
-        }
-
+        
+        floors = initFloors(FLOORS);
+        elevators = initElevators(ELEVATORS, CAPACITY);
 
         new Person("Steve", floors[0], floors[1]);
         new Person("John", floors[0], floors[1]);
@@ -47,12 +41,7 @@ public class Main {
         new Person("Jake",  floors[1], floors[2]);
         new Person("Frank",  floors[5], floors[6]);
         new Person("Julia",  floors[8], floors[1]);
-
-        elevators = new Elevator[ELEVATORS];
-        for(int i=0; i<ELEVATORS; i++) {
-            elevators[i] = new Elevator(i+1, floors[0], CAPACITY);
-        }
-    }
+    }    
 
     private static void initLevel2() {
         int FLOORS = 200;
@@ -64,14 +53,8 @@ public class Main {
         Transition.EXIT_COST = 0;
         Transition.EMPTY_COST = 0.001;
 
-
-        floors = new Floor[FLOORS];
-        floors[0] = new Floor(1, null);
-        for(int i=1; i<FLOORS; i++) {
-            floors[i] = new Floor(i+1, floors[i-1]);
-            floors[i-1].setUp(floors[i]);
-        }
-
+        floors = initFloors(FLOORS);
+        elevators = initElevators(ELEVATORS, CAPACITY);
 
         new Person("Steve", floors[120], floors[1]);
         new Person("John", floors[1], floors[54]);
@@ -80,23 +63,22 @@ public class Main {
         new Person("Jake",  floors[65], floors[84]);
         new Person("Frank",  floors[5], floors[175]);
         new Person("Julia",  floors[125], floors[34]);
-
-        elevators = new Elevator[ELEVATORS];
-        for(int i=0; i<ELEVATORS; i++) {
-            elevators[i] = new Elevator(i+1, floors[0], CAPACITY);
-        }
     }
 
-    private static void startLevel(Runnable runnable) {
-        runnable.run();
+    private static void startLevel(Runnable initLevel, boolean showTrace) {
+        initLevel.run();
 
         List<Transition> plan = Planner.solve(floors, elevators);
 
-        for(Transition transition: plan) {
-            System.out.println(transition.getTrace());
-            System.out.println("----------------------------------");
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>Level " + initLevel + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
+        if (showTrace) {
+            for (Transition transition : plan) {
+                System.out.println(transition.getTrace());
+                System.out.println("----------------------------------");
+            }
         }
-        System.out.println("***************************************************");
+
         for(Transition transition: plan) {
             System.out.println(transition);
         }
@@ -105,5 +87,23 @@ public class Main {
             total += transition.getCost();
         }
         System.out.println("Total cost: " + total);
+    }
+
+    private static Floor[] initFloors(int count) {
+        Floor[] floors = new Floor[count];
+        floors[0] = new Floor(1, null);
+        for(int i=1; i<count; i++) {
+            floors[i] = new Floor(i+1, floors[i-1]);
+            floors[i-1].setUp(floors[i]);
+        }
+        return floors;
+    }
+
+    private static Elevator[] initElevators(int count, int capacity) {
+        Elevator[] elevators = new Elevator[count];
+        for(int i=0; i<count; i++) {
+            elevators[i] = new Elevator(i+1, floors[0], capacity);
+        }
+        return elevators;
     }
 }

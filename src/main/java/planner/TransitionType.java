@@ -6,5 +6,5 @@ package planner;
  */
 public enum TransitionType {
     EMPTY,
-    FULL
+    WITH_PEOPLE
 }
