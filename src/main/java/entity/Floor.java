@@ -93,4 +93,24 @@ public class Floor implements Comparable<Floor>{
     public int compareTo(Floor o) {
         return new Integer(number).compareTo(o.getNumber());
     }
+
+    public List<Person> copyToGoUp() {
+        List<Person> result = new ArrayList<>();
+        for (Person person: people) {
+            if (person.getDestination().getNumber() > number) {
+                result.add(person);
+            }
+        }
+        return result;
+    }
+
+    public List<Person> copyToGoDown() {
+        List<Person> result = new ArrayList<>();
+        for (Person person: people) {
+            if (person.getDestination().getNumber() < number) {
+                result.add(person);
+            }
+        }
+        return result;
+    }
 }

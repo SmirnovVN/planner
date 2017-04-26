@@ -40,16 +40,26 @@ public class Elevator {
      */
     private Transition transition;
 
-    public Elevator(int id, Floor position, int capacity) {
+    /**
+     * Лифт будет останавливаться, чтобы подобрать пассажиров по пути
+     */
+    private boolean stopsForWaiting;
+
+    public Elevator(int id, Floor position, int capacity, boolean stopsForWaiting) {
         this.id = id;
         this.position = position;
         this.capacity = capacity;
+        this.stopsForWaiting = stopsForWaiting;
         this.content = new ArrayList<>();
         this.state = ElevatorState.STOP;
     }
 
     public Floor getPosition() {
         return position;
+    }
+
+    public int getCapacity() {
+        return capacity;
     }
 
     @Override
@@ -121,7 +131,10 @@ public class Elevator {
         position = floor;
         transition.addMove();
         for (Person person : content) {
-            if (person.getDestination().equals(position)) {
+            if (person.getDestination().equals(position)
+                    || (stopsForWaiting && content.size() < capacity
+                        && ((state.equals(ElevatorState.DOWN) && !position.copyToGoDown().isEmpty())
+                            || (state.equals(ElevatorState.UP) && !position.copyToGoUp().isEmpty())))) {
                 stop();
                 break;
             }

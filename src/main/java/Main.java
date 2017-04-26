@@ -15,6 +15,7 @@ public class Main {
 
     private static Floor[] floors;
     private static Elevator[] elevators;
+    private static int level = 1;
 
     public static void main(String[] args) {
         startLevel(Main::initLevel1, true);
@@ -23,16 +24,15 @@ public class Main {
 
     private static void initLevel1() {
         int FLOORS = 10;
-        int ELEVATORS = 4;
-        int CAPACITY = 1;
+        int ELEVATORS = 3;
+        int CAPACITY = 2;
         Transition.MOVE_COST = 1;
         Transition.STOP_COST = 3;
         Transition.ENTER_COST = 0;
         Transition.EXIT_COST = 0;
-        Transition.EMPTY_COST = 0.05;
         
         floors = initFloors(FLOORS);
-        elevators = initElevators(ELEVATORS, CAPACITY);
+        elevators = initElevators(ELEVATORS, CAPACITY, false);
 
         new Person("Steve", floors[0], floors[1]);
         new Person("John", floors[0], floors[1]);
@@ -46,15 +46,14 @@ public class Main {
     private static void initLevel2() {
         int FLOORS = 200;
         int ELEVATORS = 1;
-        int CAPACITY = 5;
+        int CAPACITY = 2;
         Transition.MOVE_COST = 1;
         Transition.STOP_COST = 3;
         Transition.ENTER_COST = 0;
         Transition.EXIT_COST = 0;
-        Transition.EMPTY_COST = 0.001;
 
         floors = initFloors(FLOORS);
-        elevators = initElevators(ELEVATORS, CAPACITY);
+        elevators = initElevators(ELEVATORS, CAPACITY, true);
 
         new Person("Steve", floors[120], floors[1]);
         new Person("John", floors[1], floors[54]);
@@ -70,14 +69,17 @@ public class Main {
 
         List<Transition> plan = Planner.solve(floors, elevators);
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>Level " + initLevel + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>Level " + level++ + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
         if (showTrace) {
+            System.out.println("Trace: ");
             for (Transition transition : plan) {
                 System.out.println(transition.getTrace());
-                System.out.println("----------------------------------");
             }
+            System.out.println();
         }
+
+        System.out.println("Plan: ");
 
         for(Transition transition: plan) {
             System.out.println(transition);
@@ -87,6 +89,7 @@ public class Main {
             total += transition.getCost();
         }
         System.out.println("Total cost: " + total);
+        System.out.println();
     }
 
     private static Floor[] initFloors(int count) {
@@ -99,10 +102,10 @@ public class Main {
         return floors;
     }
 
-    private static Elevator[] initElevators(int count, int capacity) {
+    private static Elevator[] initElevators(int count, int capacity, boolean stopsForWaiting) {
         Elevator[] elevators = new Elevator[count];
         for(int i=0; i<count; i++) {
-            elevators[i] = new Elevator(i+1, floors[0], capacity);
+            elevators[i] = new Elevator(i+1, floors[0], capacity, stopsForWaiting);
         }
         return elevators;
     }

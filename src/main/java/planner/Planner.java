@@ -51,45 +51,25 @@ public class Planner {
                 continue;
             }
             VirtualTransition transition = new VirtualTransition(TransitionType.EMPTY, floor);
-            transition.setHeuristic((Transition.EMPTY_COST * floor.getPeople().size() / Transition.MOVE_COST /
-                                Math.abs(elevator.getPosition().getNumber() - floor.getNumber())));
+            transition.setHeuristic((1.0/(elevator.getCapacity() + floors.length)) * Math.min(floor.getPeople().size(), elevator.getCapacity()) /
+                    (Transition.MOVE_COST * Math.abs(elevator.getPosition().getNumber() - floor.getNumber()) + Transition.STOP_COST));
             transitions.add(transition);
         }
-        List<Person> copy = copyToGoUp(elevator);
+        List<Person> copy = elevator.getPosition().copyToGoUp();
         if (!copy.isEmpty()) {
             VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, copy);
-            transition.setHeuristic((double) copy.size() / Transition.MOVE_COST / floors.length);
+            transition.setHeuristic((double) Math.min(copy.size(), elevator.getCapacity()) /
+                    (Transition.MOVE_COST * (maxDestination(copy) - elevator.getPosition().getNumber()) + Transition.STOP_COST * Math.min(copy.size(), elevator.getCapacity())));
             transitions.add(transition);
         }
-        copy = copyToGoDown(elevator);
+        copy = elevator.getPosition().copyToGoDown();
         if (!copy.isEmpty()) {
             VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, copy);
-            transition.setHeuristic((double) copy.size() / Transition.MOVE_COST / floors.length);
+            transition.setHeuristic((double) Math.min(copy.size(), elevator.getCapacity()) /
+                    (Transition.MOVE_COST * (elevator.getPosition().getNumber() - minDestination(copy)) + Transition.STOP_COST * Math.min(copy.size(), elevator.getCapacity())));
             transitions.add(transition);
         }
         return transitions;
-    }
-
-    private static List<Person> copyToGoUp(Elevator elevator) {
-        List<Person> source = elevator.getPosition().getPeople();
-        List<Person> result = new ArrayList<>();
-        for (Person person: source) {
-            if (person.getDestination().compareTo(elevator.getPosition()) > 0) {
-                result.add(person);
-            }
-        }
-        return result;
-    }
-
-    private static List<Person> copyToGoDown(Elevator elevator) {
-        List<Person> source = elevator.getPosition().getPeople();
-        List<Person> result = new ArrayList<>();
-        for (Person person: source) {
-            if (person.getDestination().compareTo(elevator.getPosition()) < 0) {
-                result.add(person);
-            }
-        }
-        return result;
     }
 
     private static boolean solved(Floor[] floors) {
@@ -99,5 +79,25 @@ public class Planner {
             }
         }
         return true;
+    }
+
+    private static int minDestination(List<Person> people) {
+        int result = people.get(0).getDestination().getNumber();
+        for (Person person : people) {
+            if (result > person.getDestination().getNumber()) {
+                result = person.getDestination().getNumber();
+            }
+        }
+        return result;
+    }
+
+    private static int maxDestination(List<Person> people) {
+        int result = people.get(0).getDestination().getNumber();
+        for (Person person : people) {
+            if (result < person.getDestination().getNumber()) {
+                result = person.getDestination().getNumber();
+            }
+        }
+        return result;
     }
 }

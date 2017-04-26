@@ -18,8 +18,6 @@ public class Transition {
 
     public static int EXIT_COST = 0;
 
-    public static double EMPTY_COST = 0;
-
     /**
      * Краткое описание перехода
      */
@@ -38,7 +36,7 @@ public class Transition {
     /**
      * Количество перевезенных людей
      */
-    private float transported;
+    private int transported;
 
     /**
      * Лифт, совершающий переход
@@ -113,7 +111,7 @@ public class Transition {
     }
 
     public void addEmpty(Floor floor) {
-        transported += EMPTY_COST * floor.getPeople().size();
+//        transported += (1.0/(elevator.getCapacity() + 1)) * Math.min(floor.getPeople().size(), elevator.getCapacity());
         trace.append(elevator)
                 .append(" goes EMPTY to ")
                 .append(elevator.getPosition())
