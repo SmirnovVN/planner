@@ -1,0 +1,43 @@
+{
+  "floors": "10",
+  "elevators": "3",
+  "capacity": "2",
+  "stopsForWaiting": "false",
+  "people": [
+    {
+      "name": "Steve",
+      "departure": 1,
+      "destination": 2
+    },
+    {
+      "name": "John",
+      "departure": 1,
+      "destination": 2
+    },
+    {
+      "name": "Ann",
+      "departure": 1,
+      "destination": 3
+    },
+    {
+      "name": "Carol",
+      "departure": 2,
+      "destination": 3
+    },
+    {
+      "name": "Jake",
+      "departure": 2,
+      "destination": 3
+    },
+    {
+      "name": "Frank",
+      "departure": 6,
+      "destination": 7
+    },
+    {
+      "name": "Julia",
+      "departure": 8,
+      "destination": 1
+    }
+  ]
+}

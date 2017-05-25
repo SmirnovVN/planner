@@ -1,0 +1,23 @@
+{
+  "floors": "2",
+  "elevators": "2",
+  "capacity": "3",
+  "stopsForWaiting": "false",
+  "people": [
+    {
+    "name": "Steve",
+    "departure": 2,
+    "destination": 1
+    },
+    {
+      "name": "John",
+      "departure": 1,
+      "destination": 2
+    },
+    {
+      "name": "Ann",
+      "departure": 1,
+      "destination": 2
+    }
+  ]
+}

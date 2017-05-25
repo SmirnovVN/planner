@@ -13,7 +13,6 @@ import java.util.List;
  * Planner
  */
 public class Planner {
-
     public static List<Transition> solve(Floor[] floors, Elevator[] elevators) {
         List<Transition> plan = new ArrayList<>();
         while (!solved(floors)) {
@@ -50,21 +49,21 @@ public class Planner {
                     || floor.isGonnaBeEmpty()) {
                 continue;
             }
-            VirtualTransition transition = new VirtualTransition(TransitionType.EMPTY, floor);
+            VirtualTransition transition = new VirtualTransition(TransitionType.EMPTY, floor, elevator);
             transition.setHeuristic((1.0/(elevator.getCapacity() + floors.length)) * Math.min(floor.getPeople().size(), elevator.getCapacity()) /
                     (Transition.MOVE_COST * Math.abs(elevator.getPosition().getNumber() - floor.getNumber()) + Transition.STOP_COST));
             transitions.add(transition);
         }
         List<Person> copy = elevator.getPosition().copyToGoUp();
         if (!copy.isEmpty()) {
-            VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, copy);
+            VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, copy, elevator);
             transition.setHeuristic((double) Math.min(copy.size(), elevator.getCapacity()) /
                     (Transition.MOVE_COST * (maxDestination(copy) - elevator.getPosition().getNumber()) + Transition.STOP_COST * Math.min(copy.size(), elevator.getCapacity())));
             transitions.add(transition);
         }
         copy = elevator.getPosition().copyToGoDown();
         if (!copy.isEmpty()) {
-            VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, copy);
+            VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, copy, elevator);
             transition.setHeuristic((double) Math.min(copy.size(), elevator.getCapacity()) /
                     (Transition.MOVE_COST * (elevator.getPosition().getNumber() - minDestination(copy)) + Transition.STOP_COST * Math.min(copy.size(), elevator.getCapacity())));
             transitions.add(transition);

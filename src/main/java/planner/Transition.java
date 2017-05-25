@@ -4,11 +4,13 @@ import entity.Elevator;
 import entity.Floor;
 import entity.Person;
 
+import java.io.Serializable;
+
 /**
  * Created by Smirnov-VN on 18.04.2017.
  * Переход между состояниями
  */
-public class Transition {
+public class Transition implements Serializable {
 
     public static int STOP_COST = 3;
 

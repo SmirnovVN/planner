@@ -2,13 +2,14 @@ package entity;
 
 import planner.Transition;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by Smirnov-VN on 18.04.2017.'
  * Лифт
  */
-public class Elevator {
+public class Elevator implements Serializable{
 
     /**
      * Идентификатор лифта
@@ -45,6 +46,11 @@ public class Elevator {
      */
     private boolean stopsForWaiting;
 
+    /**
+     * Считаем, что лифты ездят одновременно. Если лифт куда-то отправлен, нужно отправить другие лифты
+     */
+    private boolean busy;
+
     public Elevator(int id, Floor position, int capacity, boolean stopsForWaiting) {
         this.id = id;
         this.position = position;
@@ -54,12 +60,38 @@ public class Elevator {
         this.state = ElevatorState.STOP;
     }
 
+    public Elevator(int id, Floor position, int capacity, boolean stopsForWaiting, boolean busy) {
+        this.id = id;
+        this.position = position;
+        this.capacity = capacity;
+        this.stopsForWaiting = stopsForWaiting;
+        this.content = new ArrayList<>();
+        this.state = ElevatorState.STOP;
+        this.busy = busy;
+    }
+
     public Floor getPosition() {
         return position;
     }
 
     public int getCapacity() {
         return capacity;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public boolean isStopsForWaiting() {
+        return stopsForWaiting;
+    }
+
+    public boolean isBusy() {
+        return busy;
+    }
+
+    public void setBusy(boolean busy) {
+        this.busy = busy;
     }
 
     @Override
@@ -72,7 +104,7 @@ public class Elevator {
         go(floor);
         transition.addEmpty(floor);
         if (floor.getPeople().size() <= capacity) {
-            floor.setGonnaBeEmpty();
+            floor.setGonnaBeEmpty(true);
         }
         state = ElevatorState.STOP;
         return transition;
@@ -80,13 +112,24 @@ public class Elevator {
 
     public Transition goWithPeople(List<Person> people) {
         transition = new Transition(" from " + position + ". People delivered:", this);
-        for (Person person : people) {
-            if (capacity > content.size()) {
-                content.add(person);
-                position.getPeople().remove(person);
-                transition.addEnter(person);
-            }
+        take(people);
+        go(content.get(0).getDestination());
+        transition.setName("Elevator " + id + " goes " + state + transition.getName() + ". Now the elevator is on the " + position + " floor");
+        state = ElevatorState.STOP;
+        return transition;
+    }
+
+    public Transition goWithPeople(ElevatorState direction) {
+        transition = new Transition(" from " + position + ". People delivered:", this);
+        List<Person> people;
+        if (ElevatorState.UP.equals(direction)) {
+            people = position.copyToGoUp();
+        } else if (ElevatorState.DOWN.equals(direction)) {
+            people = position.copyToGoDown();
+        } else {
+            people = new ArrayList<>();
         }
+        take(people);
         go(content.get(0).getDestination());
         transition.setName("Elevator " + id + " goes " + state + transition.getName() + ". Now the elevator is on the " + position + " floor");
         state = ElevatorState.STOP;
@@ -152,5 +195,15 @@ public class Elevator {
             }
         }
         pick();
+    }
+
+    private void take(List<Person> people) {
+        for (Person person : people) {
+            if (capacity > content.size()) {
+                content.add(person);
+                position.getPeople().remove(person);
+                transition.addEnter(person);
+            }
+        }
     }
 }

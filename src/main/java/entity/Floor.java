@@ -1,13 +1,16 @@
 package entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Smirnov-VN on 18.04.2017.
  * Этаж
  */
-public class Floor implements Comparable<Floor>{
+public class Floor implements Comparable<Floor>, Cloneable, Serializable {
+
     /**
      * Номер
      */
@@ -16,21 +19,24 @@ public class Floor implements Comparable<Floor>{
     /**
      * Этаж выше
      */
-    private Floor up;
+    private transient Floor up;
 
     /**
      * Этаж ниже
      */
-    private Floor down;
+    private transient Floor down;
 
     /**
      * Люди на этаже
      */
     private List<Person> people;
 
+    /**
+     * На этот этаж уже едет лифт, который всех заберет
+     */
     private boolean gonnaBeEmpty;
 
-    public Floor(int number, Floor down) {
+    private Floor(int number, Floor down) {
         this.number = number;
         this.down = down;
         this.people = new ArrayList<>();
@@ -65,8 +71,8 @@ public class Floor implements Comparable<Floor>{
         return gonnaBeEmpty;
     }
 
-    void setGonnaBeEmpty() {
-        this.gonnaBeEmpty = true;
+    void setGonnaBeEmpty(boolean e) {
+        this.gonnaBeEmpty = e;
     }
 
     @Override
@@ -81,12 +87,34 @@ public class Floor implements Comparable<Floor>{
 
         Floor floor = (Floor) o;
 
-        return number == floor.number;
+        return equalLists(people, floor.people) && number == floor.number;
+    }
+
+    private boolean equalLists(List<Person> one, List<Person> two){
+        if (one == null && two == null){
+            return true;
+        }
+
+        if(one == null || two == null || one.size() != two.size()){
+            return false;
+        }
+
+        one = new ArrayList<>(one);
+        two = new ArrayList<>(two);
+
+        Collections.sort(one);
+        Collections.sort(two);
+        return one.equals(two);
     }
 
     @Override
     public int hashCode() {
-        return number;
+        int result = number;
+        List<Person> copy = new ArrayList<>(people);
+        Collections.sort(copy);
+        result = 31 * result + copy.hashCode();
+        result = 31 * result + (gonnaBeEmpty ? 1 : 0);
+        return result;
     }
 
     @Override
@@ -112,5 +140,26 @@ public class Floor implements Comparable<Floor>{
             }
         }
         return result;
+    }
+
+    public static Floor[] initFloors(int count) {
+        Floor[] floors = new Floor[count];
+        floors[0] = new Floor(1, null);
+        for(int i=1; i<count; i++) {
+            floors[i] = new Floor(i+1, floors[i-1]);
+            floors[i-1].setUp(floors[i]);
+        }
+        return floors;
+    }
+
+    public static Floor[] cloneFloors(Floor[] floors) {
+        Floor[] clone = initFloors(floors.length);
+        for(int i=0; i<floors.length; i++) {
+            for (Person person : floors[i].getPeople()) {
+                new Person(person.getName(), clone[person.getDeparture().number - 1], clone[person.getDestination().number - 1]);
+            }
+            clone[i].setGonnaBeEmpty(floors[i].isGonnaBeEmpty());
+        }
+        return clone;
     }
 }
