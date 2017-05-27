@@ -25,24 +25,28 @@ import static entity.Floor.initFloors;
  */
 public class Main {
 
+    private static int cap = 4;
+
     public static void main(String[] args) {
         Transition.STOP_COST = 3;
         Transition.MOVE_COST = 1;
         Transition.ENTER_COST = 0;
         Transition.EXIT_COST = 0;
-        startLevel(null, "test.json", true);
-        startLevel(null, "initial.json", false);
-        startLevel(null, "initial2.json", false);
-        startLevel("A*", "test.json", true);
+        startLevel("Direct", "test.json", true);
+        startLevel("A*", "test.json", false);
+        startLevel("Direct", "initial.json", false);
         startLevel("A*", "initial.json", false);
+        cap = 3;
+        startLevel("Direct", "initial2.json", false);
         startLevel("A*", "initial2.json", false);
     }
 
     private static void startLevel(String method, String fileName, boolean showTrace) {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>Level " + fileName + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>Find plan for " + fileName + " with " + method + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
         State initial = parse(fileName);
 
+        initial.getElevators()[1].setCapacity(cap);
         List<Transition> plan;
         if ("A*".equals(method)) {
             plan = AStar.solve(initial);

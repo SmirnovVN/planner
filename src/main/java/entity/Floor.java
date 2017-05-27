@@ -87,7 +87,7 @@ public class Floor implements Comparable<Floor>, Cloneable, Serializable {
 
         Floor floor = (Floor) o;
 
-        return equalLists(people, floor.people) && number == floor.number;
+        return equalLists(people, floor.people) && number == floor.number && gonnaBeEmpty == floor.gonnaBeEmpty;
     }
 
     private boolean equalLists(List<Person> one, List<Person> two){

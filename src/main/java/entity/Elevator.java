@@ -9,7 +9,7 @@ import java.util.*;
  * Created by Smirnov-VN on 18.04.2017.'
  * Лифт
  */
-public class Elevator implements Serializable{
+public class Elevator implements Serializable, Comparable<Elevator> {
 
     /**
      * Идентификатор лифта
@@ -78,6 +78,10 @@ public class Elevator implements Serializable{
         return capacity;
     }
 
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
     public int getId() {
         return id;
     }
@@ -92,6 +96,25 @@ public class Elevator implements Serializable{
 
     public void setBusy(boolean busy) {
         this.busy = busy;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Elevator elevator = (Elevator) o;
+
+        return capacity == elevator.capacity && busy == elevator.busy && position.getNumber() == elevator.position.getNumber();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = position.hashCode();
+        result = 31 * result + capacity;
+        result = 31 * result + state.hashCode();
+        result = 31 * result + (busy ? 1 : 0);
+        return result;
     }
 
     @Override
@@ -176,8 +199,8 @@ public class Elevator implements Serializable{
         for (Person person : content) {
             if (person.getDestination().equals(position)
                     || (stopsForWaiting && content.size() < capacity
-                        && ((state.equals(ElevatorState.DOWN) && !position.copyToGoDown().isEmpty())
-                            || (state.equals(ElevatorState.UP) && !position.copyToGoUp().isEmpty())))) {
+                    && ((state.equals(ElevatorState.DOWN) && !position.copyToGoDown().isEmpty())
+                    || (state.equals(ElevatorState.UP) && !position.copyToGoUp().isEmpty())))) {
                 stop();
                 break;
             }
@@ -203,6 +226,29 @@ public class Elevator implements Serializable{
                 content.add(person);
                 position.getPeople().remove(person);
                 transition.addEnter(person);
+            }
+        }
+    }
+
+    @Override
+    public int compareTo(Elevator o) {
+        if (position.getNumber() < o.position.getNumber()) {
+            return -1;
+        } else if (position.getNumber() > o.position.getNumber()) {
+            return 1;
+        } else {
+            if (capacity < o.capacity) {
+                return -1;
+            } else if (capacity > o.capacity) {
+                return 1;
+            } else {
+                if (busy == o.busy) {
+                    return 0;
+                } else if (busy) {
+                    return 1;
+                } else {
+                    return -1;
+                }
             }
         }
     }

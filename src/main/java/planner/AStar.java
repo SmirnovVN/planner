@@ -19,10 +19,13 @@ public class AStar {
     public static List<Transition> solve(State initial) {
         searchTree = new TreeSet<>();
         searchTree.add(initial);
+        int observed = 0;
         while (!searchTree.isEmpty()) {
             State observing = searchTree.pollFirst();
+            observed++;
             if (isTarget(observing)) {
-                System.out.println(searchTree.size());
+                System.out.println("Search tree size: " + searchTree.size());
+                System.out.println("Observed: " + observed);
                 return observing.getPath();
             } else {
                 if (allBusy(observing)) {
@@ -48,25 +51,27 @@ public class AStar {
         Elevator[] elevators = observing.getElevators();
         List<Transition> path = observing.getPath();
         for (Elevator elevator : elevators) {
-            if (elevator.isBusy()) { continue; }
-            for (Floor floor : floors) {
-                if (elevator.getPosition().compareTo(floor) == 0
-                        || floor.getPeople().isEmpty()
-                        || floor.isGonnaBeEmpty()) {
-                    continue;
+            if (elevator.getPosition().getPeople().isEmpty() && !elevator.isBusy()) {
+                for (Floor floor : floors) {
+                    if (elevator.getPosition().compareTo(floor) == 0
+                            || floor.getPeople().isEmpty()
+                            || floor.isGonnaBeEmpty()) {
+                        continue;
+                    }
+                    VirtualTransition transition = new VirtualTransition(TransitionType.EMPTY, floor, elevator);
+                    searchTree.add(new State(floors, elevators, path, transition));
                 }
-                VirtualTransition transition = new VirtualTransition(TransitionType.EMPTY, floor, elevator);
-                searchTree.add(new State(floors, elevators, path, transition));
-            }
-            List<Person> copy = elevator.getPosition().copyToGoUp();
-            if (!copy.isEmpty()) {
-                VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, ElevatorState.UP, elevator);
-                searchTree.add(new State(floors, elevators, path, transition));
-            }
-            copy = elevator.getPosition().copyToGoDown();
-            if (!copy.isEmpty()) {
-                VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, ElevatorState.DOWN, elevator);
-                searchTree.add(new State(floors, elevators, path, transition));
+            } else {
+                List<Person> copy = elevator.getPosition().copyToGoUp();
+                if (!copy.isEmpty()) {
+                    VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, ElevatorState.UP, elevator);
+                    searchTree.add(new State(floors, elevators, path, transition));
+                }
+                copy = elevator.getPosition().copyToGoDown();
+                if (!copy.isEmpty()) {
+                    VirtualTransition transition = new VirtualTransition(TransitionType.WITH_PEOPLE, ElevatorState.DOWN, elevator);
+                    searchTree.add(new State(floors, elevators, path, transition));
+                }
             }
         }
     }

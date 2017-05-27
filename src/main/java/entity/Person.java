@@ -23,6 +23,10 @@ public class Person implements Serializable, Comparable<Person> {
      */
     private Floor destination;
 
+    /**
+     * Этот человек не может подсесть в лифт, который везет пассажира, имеющего самый длинный путь
+     */
+    private boolean marked;
 
     public String getName() {
         return name;
@@ -34,6 +38,14 @@ public class Person implements Serializable, Comparable<Person> {
 
     public Floor getDestination() {
         return destination;
+    }
+
+    public boolean isMarked() {
+        return marked;
+    }
+
+    public void setMarked(boolean marked) {
+        this.marked = marked;
     }
 
     public Person(String name, Floor departure, Floor destination) {
