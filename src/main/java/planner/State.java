@@ -113,9 +113,14 @@ public class State implements Serializable, Comparable<State>{
                 double content = 0;
                 if (upH > downH) {
                     heuristic += upH;
+                    boolean firstTime = true;
                     while (content < elevator.getCapacity()) {
                         if (!up.isEmpty()&&!isMarked(up)) {
-                            Person first = up.get(0);
+                            int j = 0;
+                            while(up.get(j).isMarked()){
+                                j++;
+                            }
+                            Person first = up.get(j);
                             for (Person person : up) {
                                 if (!person.isMarked() && person.getDestination().getNumber() - person.getDeparture().getNumber()
                                         > first.getDestination().getNumber() - first.getDeparture().getNumber()) {
@@ -129,7 +134,10 @@ public class State implements Serializable, Comparable<State>{
                                 up.remove(first);
                                 content += (double) (first.getDestination().getNumber() - first.getDeparture().getNumber())
                                         / (max.getDestination().getNumber() - max.getDeparture().getNumber());
-                                heuristic += Transition.MOVE_COST * (first.getDestination().getNumber() - max.getDestination().getNumber()) +Transition.STOP_COST;
+                                if (firstTime) {
+                                    heuristic += Transition.MOVE_COST * (first.getDestination().getNumber() - max.getDestination().getNumber()) + Transition.STOP_COST;
+                                    firstTime = false;
+                                }
                             } else {
                                 first.setMarked(true);
                             }
@@ -139,9 +147,14 @@ public class State implements Serializable, Comparable<State>{
                     }
                 } else {
                     heuristic += downH;
+                    boolean firstTime = true;
                     while (content < elevator.getCapacity()) {
                         if (!down.isEmpty()&&!isMarked(down)) {
-                            Person first = down.get(0);
+                            int j = 0;
+                            while(down.get(j).isMarked()){
+                                j++;
+                            }
+                            Person first = down.get(j);
                             for (Person person : down) {
                                 if (!person.isMarked() && person.getDeparture().getNumber() - person.getDestination().getNumber()
                                         > first.getDeparture().getNumber() - first.getDestination().getNumber()) {
@@ -155,7 +168,10 @@ public class State implements Serializable, Comparable<State>{
                                 down.remove(first);
                                 content += (double) (first.getDeparture().getNumber() - first.getDestination().getNumber())
                                         / (max.getDeparture().getNumber()-  max.getDestination().getNumber());
-                                heuristic += Transition.MOVE_COST * (max.getDestination().getNumber() - first.getDestination().getNumber()) +Transition.STOP_COST;
+                                if (firstTime) {
+                                    heuristic += Transition.MOVE_COST * (max.getDestination().getNumber() - first.getDestination().getNumber()) + Transition.STOP_COST;
+                                    firstTime = false;
+                                }
                             } else {
                                 first.setMarked(true);
                             }

@@ -39,6 +39,10 @@ public class Main {
         cap = 3;
         startLevel("Direct", "initial2.json", false);
         startLevel("A*", "initial2.json", false);
+        startLevel("Direct", "initial3.json", false);
+        startLevel("A*", "initial3.json", false);
+        startLevel("Direct", "initial4.json", false);
+        startLevel("A*", "initial4.json", false);
     }
 
     private static void startLevel(String method, String fileName, boolean showTrace) {
@@ -63,8 +67,9 @@ public class Main {
         }
 
         System.out.println("Plan: ");
-
+        int i = 1;
         for(Transition transition: plan) {
+            System.out.print(i++ +". ");
             System.out.println(transition);
         }
         int total = 0;
